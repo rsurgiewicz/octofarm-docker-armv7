@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  octofarm:
+    build:
+     dockerfile: Dockerfile
+     context: .
+    container_name: octofarm-armv7
+    environment:
+      - MONGO=mongodb://octofarm-mongodb:27017/octofarm
+    ports:
+      - 4040:4000
+    depends_on:
+      - octofarm-mongodb
+    volumes:
+      - ${PWD}/logs/additional/:/root/.npm/_logs/
+      - ${PWD}/config:/var/lib/octofarm/config
+    restart: unless-stopped
+
+  octofarm-mongodb:
+    container_name: octofarm-mongodb
+    image: webhippie/mongodb:latest
+    restart: unless-stopped
+    environment:
+      MONGO_ROOT_USERNAME: root
+      MONGO_ROOT_PASSWORD: toor
+      MONGODB_PASSWORD: octoprint
+      MONGODB_USER: farmer
+#      MONGO_DATABASE: octofarm
+    volumes:
+      - ${PWD}/mongodata:/var/lib/mongodb
